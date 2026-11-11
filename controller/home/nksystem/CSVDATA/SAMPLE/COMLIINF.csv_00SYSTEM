@@ -1,0 +1,19 @@
+# KANJI-CODE : UTF-8
+# Control Line (EIA-485) Information File
+# =========================================================
+# Column:Content
+# ---------------------------------------------------------
+# 01:EIA-485 Line Number (1-10)
+# 02:Inplementation/Unimplementation (0or1)
+# 03:Protocol Name (MAX 12 Charactor)
+# 04:Device Type (0:None, 1:Serial Type, 2:TCP Type)
+# 05:Device Name or IP Address (MAX 20 Charactor)
+# 06:Prot Number (0:Serial type, xxxxx:TCP Port Number)
+# 07:Baudrate (Serial Speed)
+# 08:Datasize (7or8)
+# 09:Parity (0:None, 1:ODD, 2:EVEN)
+# 10:Stopbit (1or2)
+# 11:Receive Timer (msec)
+# 12:Send Interval Timer (msec)
+# 13:Cycle Timer (sec)
+# =========================================================

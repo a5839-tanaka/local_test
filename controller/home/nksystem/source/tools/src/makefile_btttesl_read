@@ -1,0 +1,51 @@
+#
+# Makefile for xxx
+#
+TARGET_PROC = btttesl_read
+
+TARGET = ../obj/$(TARGET_PROC)
+OBJ_DIR = ../obj/
+
+
+SRCS = \
+		btttesl_read.c
+
+OBJS = \
+		$(OBJ_DIR)btttesl_read.o
+
+LIBS = ../../lib/obj/pvcomm.a
+
+INCS = \
+    ../../inc/pvdefine.h \
+    ../../inc/pvserial.h \
+    ../../inc/pvfile.h \
+    ../../inc/pvdevdata.h \
+    ../../inc/pvudp.h \
+    ../../inc/pvcomm.h
+
+CC := gcc
+CFLAGS := -lpthread 
+RM := \rm
+CP := \cp -p 
+
+INC_PATH = \
+	-I../inc \
+	-I../../inc
+
+$(TARGET) : $(OBJS) $(LIBS) $(INCS)
+	@echo "======================================================"
+	@echo "Target Linking : $(TARGET)"
+	@$(CC) $(CFLAGS) $(INC_PATH) -o $(TARGET) $(OBJS) $(LIBS)
+	@echo "Target Chmod   : +s"
+	@chmod +s $(TARGET)
+	@echo "Target Copy to : ../../../tool/$(TARGET_PROC)"
+	@$(CP) -p $(TARGET) ../../../tool/$(TARGET_PORC)
+	@echo "======================================================"
+
+$(OBJ_DIR)btttesl_read.o : btttesl_read.c $(INCS)
+	@echo "Compile : $<"
+	@$(CC) $(CFLAGS) $(INC_PATH) -c $< -o $@
+
+clean :
+	@echo "Remove : $(TERGET) $(OBJS)"
+	@$(RM) -f $(TARGET) $(OBJS)

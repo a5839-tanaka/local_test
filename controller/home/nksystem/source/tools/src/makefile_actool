@@ -1,0 +1,48 @@
+TARGET_PROC = actool
+
+TARGET = ../obj/$(TARGET_PROC)
+OBJ_DIR = ../obj/
+
+SRCS = actool.c
+
+INCS = \
+    ../../inc/pvdefine.h \
+    ../../inc/pvserial.h \
+    ../../inc/pvfile.h \
+    ../../inc/pvudp.h \
+    ../../inc/pvcomm.h
+
+OBJS = $(OBJ_DIR)actool.o
+
+LIBS = \
+	../../lib/obj/pvcomm.a \
+	/usr/lib64/libssl.so \
+	/usr/lib64/libcrypto.so
+
+CC := gcc
+CFLAGS := -lpthread
+RM := \rm
+CP := cp -p
+
+INC_PATH = \
+	-I../inc \
+	-I../../inc \
+	-I/usr/local/openssl/include
+
+$(TARGET) : $(OBJS) $(LIBS) $(INCS)
+	@echo "======================================================"
+	@echo "Target Link : $(TARGET)"
+	@$(CC) $(CFLAGS) $(INC_PATH) -o $(TARGET) $(OBJS) $(LIBS)
+	@echo "Target Chmod   : +s"
+	@chmod +s $(TARGET)
+	@echo "Target Copy : ../../../tool/$(TARGET_PROC)"
+	@$(CP) -p $(TARGET) ../../../tool/$(TARGET_PROC)
+	@echo "======================================================"
+
+$(OBJ_DIR)actool.o : actool.c $(INCS)
+	@echo "Compile : $<"
+	@$(CC) $(CFLAGS) $(INC_PATH) -c $< -o $@
+
+clean :
+	@echo "Remove : $(TARGET) $(OBJS)"
+	@$(RM) -f $(TARGET) $(OBJS)

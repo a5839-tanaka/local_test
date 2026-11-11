@@ -1,0 +1,18 @@
+# KANJI-CODE : UTF-8
+# PVSYSTEM Management File
+# =========================================================
+# Column:Content
+# ---------------------------------------------------------
+# 01:PVSYSTEM ID (8 Charactor)
+# 02:Process11:[repoedit] Inplementation/Unimplementation (0or1)
+# 03:Process12:[nkftpsnd] Inplementation/Unimplementation (0or1)
+# 04:Process13:[emctlmng] Inplementation/Unimplementation (0or1)
+# 05:Process14:[pvschmng] Inplementation/Unimplementation (0or1)
+# 06:Process15:[nkiotsnd] Inplementation/Unimplementation (0or1)
+# 07:Process16:[--------] Inplementation/Unimplementation (0or1)
+# 08:Process17:[--------] Inplementation/Unimplementation (0or1)
+# 09:Process18:[--------] Inplementation/Unimplementation (0or1)
+# 10:Process19:[--------] Inplementation/Unimplementation (0or1)
+# 11:Process20:[--------] Inplementation/Unimplementation (0or1)
+# =========================================================
+NKSYSTEM,0,0,0,0,0,0,0,0,0,0

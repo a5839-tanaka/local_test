@@ -1,0 +1,126 @@
+# PostgreSQL user parameter
+
+# Discovery Rule
+#
+# Database Discovery
+UserParameter=db.list.discovery[*],"$1"/find_dbname.sh "$2"
+UserParameter=db_table.list.discovery[*],"$1"/find_dbname_table.sh "$2"
+UserParameter=sr.discovery[*],"$1"/find_sr.sh "$2"
+UserParameter=sr.status.discovery[*],"$1"/find_sr_client_ip.sh "$2"
+UserParameter=sr.db.list.discovery[*],"$1"/find_dbname.sh "$2"
+
+# For pg_monz 2.0 psql monitoring
+# $1: pgsql_*_funcs.sh directory path
+# $2: pgsql_funcs.conf directory path
+UserParameter=psql.running[*],"$1"/pgsql_simple.sh "$2"
+UserParameter=psql.primary_server[*],"$1"/pgsql_primary.sh "$2"
+UserParameter=psql.standby_server[*],"$1"/pgsql_standby.sh "$2"
+
+# For pg_monz 2.0
+#---  PostgreSQL user parameter  -----------------------------------------------
+# $1: pgsql_*_funcs.sh directory path
+# $2: pgsql_funcs.conf directory path
+# $3: hostname (which means the designated name specified on Zabbix Web UI)
+# $4: zabbix_agentd.conf file path
+# $5: DB name        (only for LLD) or  {$PGSLOWQUERY_TIME_THRESHOLD} ( only for pgsql.get.pg.slow_query )
+# $6: DB schema name (only for LLD)
+# $7: DB table name  (only for LLD)
+#-------------------------------------------------------------------------------
+UserParameter=pgsql.get.pg.transactions[*],"$1"/pgsql_server_funcs.sh pg.transactions "$2" "$3" "$4"
+UserParameter=pgsql.get.pg.bgwriter[*],"$1"/pgsql_server_funcs.sh pg.bgwriter $2 "$3" "$4"
+UserParameter=pgsql.get.pg.slow_query[*],"$1"/pgsql_server_funcs.sh pg.slow_query "$2" "$3" "$4" "$5"
+UserParameter=pgsql.get.pg.stat_database[*],"$1"/pgsql_db_funcs.sh pg.stat_database "$2" "$3" "$4" "$5"
+UserParameter=pgsql.get.pg.size[*],"$1"/pgsql_userdb_funcs.sh pg.size "$2" "$3" "$4" "$5"
+
+UserParameter=pgsql.get.pg.stat_table[*],"$1"/pgsql_tbl_funcs.sh pg.stat_table "$2" "$3" "$4" "$5" "$6" "$7"
+
+#---  PostgreSQL SR user parameter  --------------------------------------------
+# $1: pgsql_*_funcs.sh directory path
+# $2: pgsql_funcs.conf directory path
+# $3: hostname (which means the designated name specified on Zabbix Web UI)
+# $4: zabbix_agentd.conf file path
+#-------------------------------------------------------------------------------
+UserParameter=pgsql.get.pg.stat_replication[*],"$1"/pgsql_sr_server_funcs.sh pg.stat_replication "$2" "$3" "$4"
+UserParameter=pgsql.get.pg.sr.status[*],"$1"/pgsql_sr_server_funcs.sh pg.sr.status "$2" "$3" "$4"
+
+#---  pgpool-II user parameter  --------------------------------------------
+# Discovery Rule
+UserParameter=backend.discovery[*],"$1"/find_pgpool_backend.sh "$2"
+UserParameter=backend.status.discovery[*],"$1"/find_pgpool_backend_ip.sh "$2"
+
+#---  pgpool-II user parameter  --------------------------------------------
+UserParameter=pgpool.running[*],"$1"/pgpool_simple.sh "$2"
+UserParameter=pgpool.have_delegate_ip[*],"$1"/pgpool_delegate_ip.sh "$2"
+UserParameter=pgpool.get.nodes[*],"$1"/pgpool_backend_status.sh pgpool.nodes "$2" "$3" "$4"
+UserParameter=pgpool.get.connections[*],"$1"/pgpool_connections.sh pgpool.connections "$2" "$3" "$4"
+UserParameter=pgpool.get.cache[*],"$1"/pgpool_cache.sh pgpool.cache $2 "$3" "$4"
+
+
+
+# ntp user parameter
+UserParameter=ntp.remote,ntpq -p | grep \* | awk '{ print $1}'
+UserParameter=ntp.delay,ntpq -p | grep \* | awk '{ print $8}'
+UserParameter=ntp.offset,ntpq -p | grep \* | awk '{ print $9}'
+UserParameter=ntp.jitter,ntpq -p | grep \* | awk '{ print $10}'
+
+
+
+# httpd user parameter
+
+## openssl
+UserParameter=httpd.openssl_version,echo -n "[openssl version] :" ; openssl version ; echo -n "[rpm -q openssl] :" ; rpm -q openssl
+
+
+# hddtemp user parameter
+UserParameter=disk.temp[*],hddtemp -n $1
+
+
+
+# cputemp user parameter
+UserParameter=sensors.temp[*],sensors -u | grep $1_input | cut -d ":" -f2 | cut -d " " -f2
+
+
+
+# semaphore user parameter
+UserParameter=semaphore.num[*],ipcs -s | grep $1 | wc -l
+
+
+
+# mysql user parameter
+# For all the following commands HOME should be set to the directory that has .my.cnf file with password information.
+
+# Flexible parameter to grab global variables. On the frontend side, use keys like mysql.status[Com_insert].
+# Key syntax is mysql.status[variable].
+UserParameter=mysql.status[*],echo "show global status where Variable_name='$1';" | HOME=/var/lib/zabbix mysql --defaults-extra-file=/etc/zabbix/mysql/my.cnf -N | awk '{print $$2}'
+
+# Flexible parameter to determine database or table size. On the frontend side, use keys like mysql.size[zabbix,history,data].
+# Key syntax is mysql.size[<database>,<table>,<type>].
+# Database may be a database name or "all". Default is "all".
+# Table may be a table name or "all". Default is "all".
+# Type may be "data", "index", "free" or "both". Both is a sum of data and index. Default is "both".
+# Database is mandatory if a table is specified. Type may be specified always.
+# Returns value in bytes.
+# 'sum' on data_length or index_length alone needed when we are getting this information for whole database instead of a single table
+UserParameter=mysql.size[*],bash -c 'echo "select sum($(case "$3" in both|"") echo "data_length+index_length";; data|index) echo "$3_length";; free) echo "data_free";; esac)) from information_schema.tables$([[ "$1" = "all" || ! "$1" ]] || echo " where table_schema=\"$1\"")$([[ "$2" = "all" || ! "$2" ]] || echo "and table_name=\"$2\"");" | HOME=/var/lib/zabbix mysql -N'
+
+UserParameter=mysql.ping,HOME=/var/lib/zabbix mysqladmin --defaults-extra-file=/etc/zabbix/mysql/my.cnf ping | grep -c alive
+UserParameter=mysql.version,mysql -V
+
+# iptables user parameter
+UserParameter=iptables.bytes.output.destination[*],iptables -L OUTPUT -nvx|grep "dpt:$1"|awk '{print $$2}'
+UserParameter=iptables.bytes.output.source[*],iptables -L OUTPUT -nvx|grep "spt:$1"|awk '{print $$2}'
+UserParameter=iptables.bytes.output.sum,bash -c 'c=0; while read a nbyte rest; do ((c+=nbyte)); done < <(iptables --list OUTPUT -nvx | grep -i accept); echo $c'
+UserParameter=iptables.bytes.input.destination[*],iptables -L INPUT -nvx|grep "dpt:$1"|awk '{print $$2}'
+UserParameter=iptables.bytes.input.source[*],iptables -L INPUT -nvx|grep "spt:$1"|awk '{print $$2}'
+UserParameter=iptables.bytes.input.sum,bash -c 'c=0; while read a nbyte rest; do ((c+=nbyte)); done < <(iptables --list INPUT -nvx | grep -i accept); echo $c'
+
+
+
+# ntp chrony user parameter
+UserParameter=ntp.remote.chrony,chronyc tracking|grep 'Reference ID'|awk '{print $5}'
+UserParameter=ntp.delay.chrony,chronyc tracking|grep 'Root delay'|awk '{print $4}'
+UserParameter=ntp.offset.chrony,chronyc -c tracking|awk -F, '{print $5}'
+
+
+# syusyusouchi software version
+UserParameter=pvmanage.version,head -n 1 /home/pvsystem/bin/README.txt
