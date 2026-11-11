@@ -1,0 +1,42 @@
+#
+# Makefile for xxx
+#
+TARGET_PROC = ntp_sync
+
+TARGET = ../obj/$(TARGET_PROC)
+OBJ_DIR = ../obj/
+
+
+SRCS = ntp_sync.c
+
+INCS = 
+OBJS = \
+		$(OBJ_DIR)ntp_sync.o
+
+LIBS = 
+
+CC := gcc
+CFLAGS := -lpthread 
+CFLAGS := -lpthread -DNTP_MSGLEVEL=NTP_LOG_LV2
+RM := \rm
+CP := \cp -p 
+
+INC_PATH = 
+
+$(TARGET) : $(OBJS) $(LIBS) $(INCS)
+	@echo "======================================================"
+	@echo "Target Linking : $(TARGET)"
+	@$(CC) $(CFLAGS) $(INC_PATH) -o $(TARGET) $(OBJS) $(LIBS)
+	@echo "Target Chmod   : +s"
+	@chmod +s $(TARGET)
+	@echo "Target Copy to : ../../../tool/$(TARGET_PROC)"
+	@$(CP) -p $(TARGET) ../../../tool/$(TARGET_PORC)
+	@echo "======================================================"
+
+$(OBJ_DIR)ntp_sync.o : ntp_sync.c $(INCS)
+	@echo "Compile : $<"
+	@$(CC) $(CFLAGS) $(INC_PATH) -c $< -o $@
+
+clean :
+	@echo "Remove : $(TARGET) $(OBJS)"
+	@$(RM) -f $(TARGET) $(OBJS)

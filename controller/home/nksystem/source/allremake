@@ -1,0 +1,46 @@
+cd lib/src; make clean
+cd ../..
+cd nkinit/src; make clean
+cd ../..
+cd nkmanage/src; make clean
+cd ../..
+cd filemake/src; make clean
+cd ../..
+cd pcssma4/src ; make clean
+cd ../..
+cd pcshwei2/src ; make clean
+cd ../..
+cd takemlm2/src ; make clean
+cd ../..
+cd btttesla1/src ; make clean
+cd ../..
+cd btttesla2/src ; make clean
+cd ../..
+cd ppmsma1/src ; make clean
+cd ../..
+cd nkioplc1/src ; make clean
+cd ../..
+cd schplc1/src ; make clean
+cd ../..
+cd mitsumlm1/src ; make clean
+cd ../..
+cd omronkm1/src ; make clean
+cd ../..
+cd mlmschn1/src ; make clean
+cd ../..
+cd repoedit/src ; make clean
+cd ../..
+cd nkiotsnd/src ; make clean
+cd ../..
+cd nkftpsnd/src ; make clean
+cd ../..
+cd pvschmng/src ; make clean
+cd ../..
+cd emctlmng/src ; make clean
+cd ../..
+cd sysdebug/src ; make clean
+cd ../..
+cd tools/src ; make clean
+cd ../..
+
+./allmake

@@ -1,0 +1,44 @@
+ ドライブ C のボリューム ラベルがありません。
+ ボリューム シリアル番号は 5A13-6042 です
+
+ C:\a5839\_GitHub\IPoCC_EMS\controller\home\nksystem\source のディレクトリ
+
+2026/08/18 (火)  15:56    <DIR>          .
+2026/08/12 (水)  14:04    <DIR>          ..
+2025/11/04 (火)  11:58             1,091 allclean
+2025/11/04 (火)  11:58               844 allmake
+2025/11/04 (火)  11:58               833 allremake
+2026/08/12 (水)  14:04    <DIR>          btttesla1
+2026/08/12 (水)  14:04    <DIR>          btttesla2
+2026/08/12 (水)  14:04    <DIR>          embaselib
+2026/08/12 (水)  14:04    <DIR>          embase_mon
+2026/08/12 (水)  14:04    <DIR>          emctl
+2026/08/12 (水)  14:04    <DIR>          emctlmng
+2026/08/12 (水)  14:04    <DIR>          eminit
+2026/08/12 (水)  14:04    <DIR>          emsystem
+2026/08/12 (水)  14:04    <DIR>          external_lib_aws
+2026/08/12 (水)  14:04    <DIR>          external_lib_mbedTLS
+2026/08/12 (水)  14:04    <DIR>          filemake
+2026/08/17 (月)  23:15    <DIR>          inc
+2026/08/12 (水)  14:04    <DIR>          lib
+2026/08/18 (火)  15:56                 0 list.txt
+2026/08/12 (水)  14:04    <DIR>          mitsumlm1
+2026/08/12 (水)  14:04    <DIR>          mlmschn1
+2026/08/12 (水)  14:04    <DIR>          nkftpsnd
+2026/08/12 (水)  14:04    <DIR>          nkinit
+2026/08/12 (水)  14:04    <DIR>          nkioplc1
+2026/08/12 (水)  14:04    <DIR>          nkiotsnd
+2026/08/12 (水)  14:04    <DIR>          nkmanage
+2026/08/12 (水)  14:04    <DIR>          omronkm1
+2026/08/12 (水)  14:04    <DIR>          pcshwei2
+2026/08/12 (水)  14:04    <DIR>          pcssma4
+2026/08/12 (水)  14:04    <DIR>          ppmsma1
+2026/08/12 (水)  14:04    <DIR>          pvschmng
+2026/08/12 (水)  14:04    <DIR>          repoedit
+2026/08/12 (水)  14:04    <DIR>          schplc1
+2026/08/12 (水)  14:04    <DIR>          sysdebug
+2026/08/12 (水)  14:04    <DIR>          takemlm2
+2026/08/12 (水)  14:04    <DIR>          test
+2026/08/12 (水)  14:04    <DIR>          tools
+               4 個のファイル               2,768 バイト
+              33 個のディレクトリ  120,375,455,744 バイトの空き領域

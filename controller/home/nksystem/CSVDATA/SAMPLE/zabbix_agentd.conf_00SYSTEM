@@ -1,0 +1,15 @@
+# ■共通 ==================================================================================
+PidFile=/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+AllowRoot=1
+Timeout=30
+
+# ■ホスト名を入力してください。 ==========================================================
+Hostname=PVSYTEST
+
+# ■リモートネットワーク環境の場合、下記のコメントを外してください。 ======================
+ServerActive=sym001.nkwebserv.jp:7171
+Server=sym001.nkwebserv.jp 
+
+# ■centOS,AlmaLinux系OSの場合、下記のコメントを外してください。 ======================================
+Include=/etc/zabbix/zabbix_agentd.d/

@@ -1,0 +1,15 @@
+# KANJI-CODE : UTF-8
+# TM-DATA Infomation File
+# -------------------------------------------------
+# Column:Content
+# 01:Machine Kind
+# 02:Machine Number
+# 03:TM Number
+# 04:Inplementation/Unimplementation (0or1)
+# 05:TM Kind
+# 06:Exponent
+# 07:Convert Value
+# 08:Base Value
+# 09:Unit Kind
+# 10:TM-DATA Name (MAX 72 Charactors)
+# 11:TM Data Accumulation

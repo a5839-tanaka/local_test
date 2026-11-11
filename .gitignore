@@ -1,0 +1,9 @@
+controller/home/nksystem/EXTDATA/*
+controller/home/nksystem/CERTDATA/**/*
+controller/home/nksystem/DWLDATA/*
+controller/home/nksystem/ONLDATA/*
+controller/home/nksystem/sONLDATA/*
+controller/home/nksystem/slog/*
+
+# source
+controller/home/nksystem/source/test/*
