@@ -1,0 +1,55 @@
+cd embaselib/src; make
+cd ../..
+cd eminit/src; make
+cd ../..
+cd emctl/src; make
+cd ../..
+cd emsystem/src; make
+cd ../..
+cd embase_mon/src; make
+cd ../..
+
+cd lib/src; make
+cd ../..
+cd nkinit/src; make
+cd ../..
+cd nkmanage/src; make
+cd ../..
+cd filemake/src; make
+cd ../..
+cd pcssma4/src ; make
+cd ../..
+cd pcshwei2/src ; make
+cd ../..
+cd takemlm2/src ; make
+cd ../..
+cd btttesla1/src ; make
+cd ../..
+cd btttesla2/src ; make
+cd ../..
+cd ppmsma1/src ; make
+cd ../..
+cd nkioplc1/src ; make
+cd ../..
+cd schplc1/src ; make
+cd ../..
+cd mitsumlm1/src ; make
+cd ../..
+cd omronkm1/src ; make
+cd ../..
+cd mlmschn1/src ; make
+cd ../..
+cd repoedit/src ; make
+cd ../..
+cd nkiotsnd/src ; make
+cd ../..
+cd nkftpsnd/src ; make
+cd ../..
+cd pvschmng/src ; make
+cd ../..
+cd emctlmng/src ; make
+cd ../..
+cd sysdebug/src ; make
+cd ../..
+cd tools/src ; make
+cd ../..

@@ -1,0 +1,19 @@
+# KANJI-CODE : UTF-8
+# SV-DATA Infomation File
+# -------------------------------------------------
+# Column:Content
+# 01:Machine Kind
+# 02:Machine Number
+# 03:SV Number
+# 04:Inplementation/Unimplementation (0or1)
+# 05:SV Kind
+# 06:SV-DATA Name (MAX 72 Charactors)
+0,1,1,1,0,装置運転,0
+0,1,2,1,0,装置異常,0
+0,1,3,1,0,系情報(1系),0
+0,1,4,1,0,系情報(2系),0
+0,1,9,1,0,手動停止,0
+0,1,10,1,0,縮退運転,0
+0,1,11,1,0,プログラムアップデート検出,0
+0,1,12,1,0,データアップデート検出,0
+0,1,13,1,0,再起動,0
