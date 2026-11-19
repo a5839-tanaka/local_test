@@ -4,6 +4,10 @@
 /*
  * 改修履歴
  * -----------------------------------------------------------------------------
+ * [20261112] 2026.11.12 MGE_IPOCC-1490
+ * ・受電電力一定制御の有効/無効の追加、想定負荷電力の追加
+ * [20261015] 2026.10.15
+ * ・周波数計測平均時間の追加
  * [20260515] 2026.05.15
  * ・一次調整力の実績データファイルをdatファイルで運用するように変更
  * ・周波数判定タイミングを000ms時にのみ実施するように変更(実績データとの整合性を合わせる為）
@@ -588,6 +592,7 @@ int main(int argc, char *argv[])
 	/* 移動平均情報を初期化 */
 	retCode = func_avlData_init( &s_rcvPowAve, (ps_g_RCVPWINF->rcvPowAveTime / 100) );
 	retCode = func_avlData_init( &s_loadPowAve, (ps_g_RCVPWINF->loadPowAveTime / 100) );
+	retCode = func_avlData_init( &s_freqAve, (ps_g_FCRSTINF->frequencyAveTime / 100) );	/* [20261015] Add */
 
 	/* 初期化処理 */
 	pvctl_cmn_init();
@@ -630,18 +635,8 @@ printf("%s : Thread EXECUTE Error\n", pv_own_name );
 	}
 	else
 	{
-		sprintf( errMsg, "extra file read. (%s)", extdataPath );
-		commfunc_syslog_msgset( pv_own_name, errMsg );
-		/* 容量市場優先を設定 */
-		ps_g_EMCTLFIL->cmExamPri = cmExamPri;
-
-		sprintf( errMsg, " %s=%d", EMS_CTLCONF_PARAM3, ps_g_EMCTLFIL->cmExamPri );
-		commfunc_syslog_msgset( pv_own_name, errMsg );
-		sprintf( errMsg, " %s=%d", EMS_CTLCONF_PARAM4, freqAveCnt );
-		commfunc_syslog_msgset( pv_own_name, errMsg );
+/* [20261015] Del */
 	}
-	/* 移動平均情報を初期化 */
-	retCode = func_avlData_init( &s_freqAve, freqAveCnt);
 /* [20260514] Chg Ed */
 /* [20240910] Add Ed */
 
@@ -674,22 +669,7 @@ printf("%s : Thread EXECUTE Error\n", pv_own_name );
 		retFileCode = func_get_extraParam( extdataPath, &fileTime, &cmExamPri, &freqAveCnt );
 		if( retFileCode == COM_PARAM_GET_OK )
 		{
-			/* 容量市場優先を設定 */
-			ps_g_EMCTLFIL->cmExamPri = cmExamPri;
-			sprintf( errMsg, "Updated Capacity Market Priority.");
-			commfunc_syslog_msgset( pv_own_name, errMsg );
-			sprintf( errMsg, " %s=%d", EMS_CTLCONF_PARAM3, ps_g_EMCTLFIL->cmExamPri );
-			commfunc_syslog_msgset( pv_own_name, errMsg );
-			/* 周波数平均100msカウントが更新された場合 */
-			if( s_freqAve.stocMax != freqAveCnt )
-			{
-				sprintf( errMsg, "Updated frequency average time.");
-				commfunc_syslog_msgset( pv_own_name, errMsg );
-				/* 移動平均情報を初期化 */
-				retCode = func_avlData_init( &s_freqAve, freqAveCnt);
-				sprintf( errMsg, " %s=%d", EMS_CTLCONF_PARAM4, freqAveCnt );
-				commfunc_syslog_msgset( pv_own_name, errMsg );
-			}
+/* [20261015] Del */
 /* [20260514] Chg Ed */
 		}
 /* [20240910] Add Ed */
@@ -2861,11 +2841,22 @@ int	func_mode_S4( int reCalcFlg )
 			ps_g_EMCTLFIL->reCalcFlg = PVCTL_FLG_OFF;
 /* [20230220] Add Ed */
 
-			/* BT指令値計算
-			/*  ①ΔkW = 受電電力(MM1)の平均値 - 受電電力目標値 */
-			/*  ②BT指令値 = ① + BTの現在出力値(BTから取得)  */
-			bttReqPow = s_rcvPowAve.tmAvlVal - rcvTargetPow + s_sysDataAv.tmValData[PV_SYS_TM_BATTE_POW-1];
-
+/* [20261112] Chg St */
+			/* 受電電力一定制御が無効の場合 */
+			if( ps_g_RCVPWINF->rcvPowConst == EMCTL_FLG_OFF )
+			{
+				/* 指令値制御 */
+				/*  BT指令値 = 想定負荷電力 - 受電電力目標値 */
+				bttReqPow = ps_g_RCVPWINF->assumedLoadPow - rcvTargetPow;
+			}
+			else
+			{
+				/* BT指令値計算
+				/*  ①ΔkW = 受電電力(MM1)の平均値 - 受電電力目標値 */
+				/*  ②BT指令値 = ① + BTの現在出力値(BTから取得)  */
+				bttReqPow = s_rcvPowAve.tmAvlVal - rcvTargetPow + s_sysDataAv.tmValData[PV_SYS_TM_BATTE_POW-1];
+			}
+/* [20261112] Chg Ed */
 /* [20251203] Del */
 
 /* [20251202] Chg St */
@@ -5578,6 +5569,14 @@ int pvctl_confupdate_file_read_check( void )
 		}
 /* [20230830] Add Ed */
 
+/* [20261015] Add St */
+		/* 周波数計測平均時間が変更となる場合 */
+		if( ps_g_FCRSTINF->frequencyAveTime != s_fcrstinf.frequencyAveTime )
+		{
+			/* 移動平均情報を初期化 */
+			func_avlData_init( &s_freqAve, (s_fcrstinf.frequencyAveTime / 100) );
+		}
+/* [20261015] Add St */
 /* [20250807] Add St */
 		/* 一次調整力パラメータ設定情報を更新する */
 		s_fcrstinf.readFlg = readFlg;

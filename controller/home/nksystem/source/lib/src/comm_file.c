@@ -4,6 +4,10 @@
 /*
  * 改修履歴
  * -----------------------------------------------------------------------------
+ * [20261112] 2026.11.12 MGE_IPOCC-1490
+ * ・受電電力一定制御の有効/無効の追加、想定負荷電力の追加
+ * [20261015] 2026.10.15
+ * ・周波数計測平均時間の追加
  * [20260515] 2026.05.15
  * ・一次調整力の実績データファイルをdatファイルで運用するように変更
  * [20260514] 2026.05.14
@@ -1528,7 +1532,7 @@ int	func_CEMSPINF_Check( FILE *fp, int readType, struct st_CEMSPINF *ps_CEMSPINF
 		}
 		ps_CEMSPINF->balancePri = workData;
 
-		/* 容量市場優先度の取得 */
+		/* 容量市場(実需給)優先度の取得 */
 		workData = atoi( s_sepStr.data[csvOffset] );
 		csvOffset++;
 		if( workData < 0 )
@@ -1542,6 +1546,21 @@ int	func_CEMSPINF_Check( FILE *fp, int readType, struct st_CEMSPINF *ps_CEMSPINF
 		ps_CEMSPINF->capacityPri = workData;
 /* [20240220] Add Ed */
 
+/* [20261112] Add St */
+		/* 容量市場(実効性テスト)優先度の取得 */
+		workData = atoi( s_sepStr.data[csvOffset] );
+		csvOffset++;
+		if( workData < 0 )
+		{
+			sprintf( errMsg, "CSV-Format(CEMSPINF) Error (capacityExamPri). File[%s] Line[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
+			commfunc_syslog_msgset( "FILEMAKE", errMsg );
+			printf("FILEMAKE : InputFile[%s] CSV-Data error", csvFilePath );
+			retCode = -1;
+			break;
+		}
+		ps_CEMSPINF->capacityExamPri = workData;
+/* [20261112] Add Ed */
+
 		/* BT充放電制御設定の取得 */
 		workData = atoi( s_sepStr.data[csvOffset] );
 		csvOffset++;
@@ -1554,19 +1573,6 @@ int	func_CEMSPINF_Check( FILE *fp, int readType, struct st_CEMSPINF *ps_CEMSPINF
 			break;
 		}
 		ps_CEMSPINF->btControl = workData;
-
-		/* PV抑制制御の取得 */
-		workData = atoi( s_sepStr.data[csvOffset] );
-		csvOffset++;
-		if( (workData != 0) && (workData != 1) )
-		{
-			sprintf( errMsg, "CSV-Format(CEMSPINF) Error (pvControl). File[%s] Line[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
-			commfunc_syslog_msgset( "FILEMAKE", errMsg );
-			printf("FILEMAKE : InputFile[%s] CSV-Data error", csvFilePath );
-			retCode = -1;
-			break;
-		}
-		ps_CEMSPINF->pvControl = workData;
 
 		/* shutdownWaitの取得 */
 		workData = atoi( s_sepStr.data[csvOffset] );
@@ -1715,8 +1721,23 @@ int	func_RCVPWINF_Check( FILE *fp, int readType, struct st_RCVPWINF *ps_RCVPWINF
 			csvOffset++;
 		}
 
-		if( csvCount == 11+csvOffset )	/* [20210128] Chg *//* [20240220] Chg */
+		if( csvCount == 12+csvOffset )	/* [20210128] Chg *//* [20240220] Chg *//* [20261112] Chg */
 		{
+/* [20261112] Add St */
+			/* 受電電力一定制御設定の取得 */
+			workData = atoi( s_sepStr.data[csvOffset] );
+			csvOffset++;
+			if( (workData != 0) && (workData != 1) )
+			{
+				sprintf( errMsg, "CSV-Format(RCVPWINF) Error (rcvPowConst). File[%s] Line[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
+				commfunc_syslog_msgset( "FILEMAKE", errMsg );
+				printf("FILEMAKE : InputFile[%s] CSV-Data error", csvFilePath );
+				retCode = -1;
+				break;
+			}
+			ps_RCVPWINF->rcvPowConst = workData;
+/* [20261112] Add Ed */
+
 			/* BCP用SOCの取得 */
 			workData = atoi( s_sepStr.data[csvOffset] );
 			csvOffset++;
@@ -1732,18 +1753,20 @@ int	func_RCVPWINF_Check( FILE *fp, int readType, struct st_RCVPWINF *ps_RCVPWINF
 
 /* [20210128] Del */
 
-			/* 受電電力脱落負荷量 */
+/* [20261112] Chg St */
+			/* 想定負荷電力 */
 			workData = atoi( s_sepStr.data[csvOffset] );
 			csvOffset++;
-			if( workData <= 0 )
+			if( workData < 0 )
 			{
-				sprintf( errMsg, "CSV-Format(RCVPWINF) Error (dropOffLoadPower). File[%s] Line[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
+				sprintf( errMsg, "CSV-Format(RCVPWINF) Error (assumedLoadPow). File[%s] Line[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
 				commfunc_syslog_msgset( "FILEMAKE", errMsg );
 				printf("FILEMAKE : InputFile[%s] CSV-Data error", csvFilePath );
 				retCode = -1;
 				break;
 			}
-			ps_RCVPWINF->dropOffLoadPower = workData;
+			ps_RCVPWINF->assumedLoadPow = workData;
+/* [20261112] Chg Ed */
 
 			/* 制御不感帯 */
 			workData = atoi( s_sepStr.data[csvOffset] );
@@ -2408,9 +2431,9 @@ int	func_FCRSTINF_Check( FILE *fp, int readType, struct st_FCRSTINF *ps_FCRSTINF
 		}
 
 		/* CSVデータ数が不正の場合 */
-		if( csvCount != 10+csvOffset )/* [20251212] 充電応動有無追加 Chg */
+		if( csvCount != 11+csvOffset )/* [20251212] 充電応動有無追加 Chg *//* [20261112] Chg */
 		{
-			sprintf( errMsg, "CSV-Format(FCRSTINF) Error (Data is not 10). File[%s] LINE[%d] DATACNT[%d]", csvFilePath, syoriCount, csvCount );/* [20251215] メッセージ修正 Chg */
+			sprintf( errMsg, "CSV-Format(FCRSTINF) Error (Data is not 11). File[%s] LINE[%d] DATACNT[%d]", csvFilePath, syoriCount, csvCount );/* [20251215] メッセージ修正 Chg *//* [20261112] Chg */
 			commfunc_syslog_msgset( "FILEMAKE", errMsg );
 			retCode = -1;
 			break;
@@ -2570,6 +2593,22 @@ int	func_FCRSTINF_Check( FILE *fp, int readType, struct st_FCRSTINF *ps_FCRSTINF
 		/* 充電応動有無の設定 */
 		ps_FCRSTINF->chgResponsiveEnabled = workData;
 /* [20251212] 充電応動有無の対応 Add Ed */
+
+/* [20261112] Add St */
+		/* 周波数計測平均時間の取得 */
+		workData = atoi( s_sepStr.data[csvOffset] );
+		csvOffset++;
+		/* 周波数計測平均時間が0より小さい */
+		if( ((workData/100) <= 0 ) || ((workData/100) > AVE_CNT_MAX ))
+		{
+			sprintf( errMsg, "CSV-Format(FCRSTINF) Error (frequencyAveTime is not in range). File[%s] LINE[%d] DAT[%d]", csvFilePath, syoriCount, csvOffset );
+			commfunc_syslog_msgset( "FILEMAKE", errMsg );
+			retCode = -1;
+			break;
+		}
+		/* 周波数計測平均時間の設定 */
+		ps_FCRSTINF->frequencyAveTime = workData;
+/* [20261112] Add Ed */
 	}
 
 	return retCode;
@@ -2617,7 +2656,7 @@ int	func_FCRRPINF_Check( FILE *fp, int readType, struct st_FCRRPINF *ps_FCRRPINF
 		/* コメント行はスキップ */
 		if( readBuff[0] == '#' ) continue;
 		/* 未入力行（9文字以下）はスキップ */
-		if( strlen( readBuff ) < 10) continue;
+		if( strlen( readBuff ) < 7) continue;
 		/* CSVデータの分割 */
 		csvCount = func_cmn_sep_data( readBuff, &s_sepStr );
 
@@ -3233,7 +3272,7 @@ int commfunc_chkUChosei( int uKind )
 int	commfunc_file_info_get( char *filePath, time_t *checkTime, char *srchStr, char *getStr )
 {
 	FILE					*fp;							/* ファイルディスクリプタ */
-	char					readBuff[2048];					/* リードバッファ */
+	char					readBuff[4096];					/* リードバッファ */
 	int						equCount;						/* パラメータ分割数 */
 	struct st_cmn_sepStr	s_equStr;						/* データ分割用 */
 	int						retCode=COM_PARAM_GET_NOTFOUND;	/* 戻り値 *//* 初期値は該当なし */
