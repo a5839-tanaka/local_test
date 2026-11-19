@@ -483,6 +483,7 @@
 #define PV_SYS_TM_FCRCTL_RATED_POWER			   33		/* 定格出力 */
 #define PV_SYS_TM_FCRCTL_DEAD_BAND_RES_TYPE		   34		/* 不感帯応動種別 */
 #define PV_SYS_TM_FCRCTL_CONTRACT_DLT_POW		   35		/* 約定△kW */
+#define PV_SYS_TM_TOTAL_CONTRACT_DLT_POW		   36		/* 全体約定△kW *//* [202601113] Add */
 /* [20260130] Del */
 /* [20250807] Add Ed */
 
@@ -766,16 +767,27 @@
 #define PV_POWPLAN_TYPE_BTTPOW				2					/* 計画種別(充放電電力) */
 #define PV_POWPLAN_TYPE_SOC					3					/* 計画種別(SoC) */
 #define PV_POWPLAN_TYPE_USE_BCP				4					/* 計画種別(BCP) */
-#define PV_POWPLAN_TYPE_USE_AC				5					/* 計画種別(需給調整市場使用) *//* [20230529] Add */
-#define PV_POWPLAN_TYPE_REC_SOC				6					/* 計画種別(需給調整市場必要電力量) *//* [20230529] Add */
-#define PV_POWPLAN_TYPE_CHG_LIMIT			7					/* 計画種別(充電電力上限) *//* [20230529] Add */
-#define PV_POWPLAN_TYPE_DIS_LIMIT			8					/* 計画種別(放電電力上限) *//* [20230529] Add */
-#define PV_POWPLAN_TYPE_OVER_PEAKCUT		9					/* 計画種別(ピークカット使用有無) *//* [20240220] Add */
-#define PV_POWPLAN_TYPE_USE_CM				10					/* 計画種別(容量市場使用) *//* [20240220] Add */
-/* [20250807] Add St */
-#define PV_POWPLAN_TYPE_FCR_USE				11					/* 計画種別(一次調整力使用) *//* [20250909] Add */
-#define PV_POWPLAN_TYPE_FCR_DLTKW			12					/* 計画種別(一次調整力約定ΔkW) *//* [20250807] Add */
-#define PV_POWPLAN_TYPE_NUM					13					/* 計画種別数 *//* [20230529] Chg *//* [20240220] Chg *//* [20250807] Chg *//* [20250909] Chg */
+/* [20261009] Chg St */
+#define PV_POWPLAN_TYPE_REC_SOC				5					/* 計画種別(需給調整市場必要電力量) *//* [20230529] Add *//* [20261009] Chg */
+#define PV_POWPLAN_TYPE_OVER_PEAKCUT		6					/* 計画種別(ピークカット使用有無) *//* [20240220] Add *//* [20261009] Chg */
+#define PV_POWPLAN_TYPE_FCR_DLTKW			7					/* 計画種別(一次調整力約定ΔkW) *//* [20250807] Add *//* [20261009] Chg */
+#define PV_POWPLAN_TYPE_OUT_LIMIT			8					/* 計画種別(出力制御値) *//* [20261009] Add */
+#define PV_POWPLAN_TYPE_RES_TYPE			9					/* 計画種別(応動商品区分) *//* [20261009] Add */
+#define PV_POWPLAN_TYPE_ALL_DLTKW			10					/* 計画種別(ΔkW約定量（全体）) *//* [20261009] Add */
+#define PV_POWPLAN_TYPE_NUM					11					/* 計画種別数 *//* [20230529] Chg *//* [20240220] Chg *//* [20250807] Chg *//* [20250909] Chg *//* [20261009] Chg */
+/* [20261009] Chg Ed */
+
+/* [20261009] Add St */
+/* 応動商品区分 */
+#define	PV_RES_TYPE_NONE					0x0000				/* なし */
+#define	PV_RES_TYPE_RR_FOR_FIT				0x0001				/* 需給調整市場(三次調整力②) */
+#define	PV_RES_TYPE_RR						0x0002				/* 需給調整市場(三次調整力①) */
+#define	PV_RES_TYPE_FRR						0x0004				/* 需給調整市場(二次調整力②) */
+#define	PV_RES_TYPE_SYNC_FRR				0x0008				/* 需給調整市場(二次調整力①) */
+#define	PV_RES_TYPE_FCR						0x0010				/* 需給調整市場(一次調整力) */
+#define	PV_RES_TYPE_CM_EXAM					0x0100				/* 容量市場(実効性テスト) */
+#define	PV_RES_TYPE_CM						0x0200				/* 容量市場(実需給) */
+/* [20261009] Add Ed */
 /* [20250807] Add Ed */
 
 
@@ -836,6 +848,9 @@
 /* [20240701] Chg St */
 /* [20240221] Add St */
 /* 商品区分 */
+/* [20261009] Add St */
+#define AWS_CATEGORY_COMPOSITE							"4000"		/* 複合 */
+/* [20261009] Add Ed */
 #define AWS_CATEGORY_REPLACEMENT_RESERVE_FOR_FIT		"3200"		/* 三次調整力(2) */
 #define AWS_CATEGORY_REPLACEMENT_RESERVE				"3100"		/* 三次調整力(1) */
 #define AWS_CATEGORY_FREQUENCY_CONTAINMENT				"2200"		/* 二次調整力(2)(未対応) */
@@ -848,6 +863,9 @@
 #define AWS_CATEGORY_CM 								2			/* 容量市場 */
 #define AWS_CATEGORY_FRR								3			/* 需給調整市場(二次調整力①②) */
 #define AWS_CATEGORY_FCR								4			/* 需給調整市場(一次調整力) */
+/* [20261009] Add St */
+#define AWS_CATEGORY_COM								5			/* 需給調整市場(複合) */
+/* [20261009] Add Ed */
 
 #define AWS_STR_TRUE									"true"		/* True */
 #define AWS_STR_FALSE									"false"		/* False */
