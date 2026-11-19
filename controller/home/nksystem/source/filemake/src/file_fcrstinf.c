@@ -4,6 +4,8 @@
 /*
  * 改修履歴
  * -----------------------------------------------------------------------------
+ * [20261015] 2026.10.15
+ * ・起動時のファイルデータ設定を実装
  * [20260212] 2026.02.12
  * ・一次調整力のコマで、データアップデートされた場合に
  *   ファイル内容の初期化を行わない(0除算対策)
@@ -65,15 +67,24 @@ int	func_FCRSTINF_Create( void )
 /* [20260212] Add St */
 	int					acs_ret = 0;				/* ファイルアクセス 初期値あり */
 /* [20260212] Add Ed */
+/* [20261015] Add St */
+	FILE				*fp;						/* ファイルポインタ */
+	char				csvFilePath[1024];			/* CSVファイルパス */
+/* [20261015] Add Ed */
 
 	/* ファイルパスの展開 */
+/* [20261015] Add St */
+	strcpy(csvFilePath, PV_PATH_CSV );
+	strcat(csvFilePath, PV_FNAME_FCRSTINF );
+	strcat(csvFilePath, ".csv");
+/* [20261015] Add Ed */
 	strcpy(datFilePathDat, PV_PATH_DAT );
 	strcat(datFilePathDat, PV_FNAME_FCRSTINF );
 	strcat(datFilePathDat, ".dat");
 
 /* [20260212] Add St */
 	/* ファイルの存在チェック */
-	acs_ret = access( datFilePathDat, F_OK );
+	acs_ret = access( csvFilePath, F_OK );	/* [20261015] Chg */
 /* [20260212] Add Ed */
 
 	/* DATファイル生成 */
@@ -106,11 +117,33 @@ int	func_FCRSTINF_Create( void )
 		return( retCode );
 	}
 
+/* [20261015] Chg St */
 /* [20260212] Chg St */
-	if( acs_ret == -1 )
+	/* ファイルが存在する場合 */
+	if( acs_ret == 0 )
+	{
+		/* CSVファイルオープン */
+		if( (fp = fopen(csvFilePath, "r")) != NULL)
+		{
+			retCode = func_FCRSTINF_Check( fp, PV_CSVTYPE_NEW, ps_FCRSTINF, csvFilePath );
+
+			/* CSVファイルをクローズ */
+			fclose( fp );
+		}
+		else
+		{
+			sprintf( errMsg, "File[%s] Open error", csvFilePath );
+			commfunc_syslog_msgset( "FILEMAKE", errMsg );
+			retCode = -1;
+		}
+	}
+	else
 	{
 		/* ファイルの内容を0クリア */
 		memset( ps_FCRSTINF, 0, sizeof(struct st_FCRSTINF));
+		sprintf( errMsg, "Information: File[%s] Not Found", csvFilePath );
+		commfunc_syslog_msgset( "FILEMAKE", errMsg );
+/* [20261015] Chg Ed */
 	}
 #ifdef DEBUG_FCRSTINF_INIT
 	sprintf( errMsg, "ps_FCRSTINF acs_ret == %d (0:NONE -1:INIT) FILE %s" ,acs_ret, datFilePathDat );

@@ -4,6 +4,10 @@
 /*
  * 改修履歴
  * -----------------------------------------------------------------------------
+ * [20261112] 2026.11.12 MGE_IPOCC-1490
+ * ・受電電力一定制御の有効/無効の追加、想定負荷電力の追加
+ * [20261015] 2026.10.15
+ * ・周波数計測平均時間の追加
  * [20260814] 2026.08.14
  * ・Amazon Linux 2023のビルドエラー対応
  * [20260515] 2026.05.15
@@ -462,7 +466,6 @@ struct st_TMMONINF {								/* [12]計測監視情報ファイル（１レコー
 struct st_CEMSPINF {								/* [13]ＣＥＭＳ制御情報保存ファイル */
 	int				btControl;						/* BT充放電制御 */
 	int				pvControl;						/* PV抑制制御 */
-	int				rcvPowConst;					/* 受電電力一定制御 */
 	int				ovrChgAvoid;					/* 過充電回避制御 */
 	int				dmdControl;						/* デマンド制御 */
 	int				shutdownWait;					/* シャットダウン待機時間 */
@@ -480,8 +483,9 @@ struct st_CEMSPINF {								/* [13]ＣＥＭＳ制御情報保存ファイル */
 /* [20230217] Add Ed */
 /* [20240220] Add St */
 	int				balancePri;						/* 需給調整市場優先度 */
-	int				capacityPri;					/* 容量市場優先度 */
+	int				capacityPri;					/* 容量市場(実需給)優先度 */
 /* [20240220] Add Ed */
+	int				capacityExamPri;				/* 容量市場(実効性テスト)優先度 *//* [20261112] Add */
 };
 
 struct st_DEMNDINF {								/* [14]デマンド監視情報保存ファイル */
@@ -508,9 +512,10 @@ struct st_DEMNDINF {								/* [14]デマンド監視情報保存ファイル */
 };
 
 struct st_RCVPWINF {								/* [15]受電電力一定制御情報保存ファイル */
+	int				rcvPowConst;					/* 受電電力一定制御 *//* [20261112] Add */
 	int				BCPSoc;							/* BCP用SOC */
 /* [20210128] Del */
-	int				dropOffLoadPower;				/* 受電電力脱落負荷量 */
+	int				assumedLoadPow;					/* 想定負荷電力 *//* [20261112] Chg */
 	int				deadZone;						/* 制御不感帯 */
 	int				dischgRestartSoC;				/* 放電再開SOC */
 	int				chgRestartSoC;					/* 充電再開SOC */
@@ -761,6 +766,7 @@ struct st_FCRSTINF {								/* [33]一次調整力パラメータ設定情報 */
 	int				chgPowerChgAmount;				/* 充電時出力変化量 */
 	int				deadBandResType;				/* 不感帯応動種別 */
 	int				chgResponsiveEnabled;			/* 充電応動有無 *//* [20251212] Add */
+	int				frequencyAveTime;				/* 周波数計測平均時間 *//* [20261015] Add */
 };
 
 struct st_FCRRPINF {								/* [34]一次調整力レポート蓄積項目情報 */

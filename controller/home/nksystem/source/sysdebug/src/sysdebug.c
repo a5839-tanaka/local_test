@@ -4487,7 +4487,8 @@ void	func_display_cemsdinfo()
 		printf("\033[0K");  printf("  ピークカット                      ：%d\n", ps_g_CEMSPINF->peakCutPri);
 		printf("\033[0K");  printf("  BCP                               ：%d\n", ps_g_CEMSPINF->bcpPri);
 		printf("\033[0K");  printf("  需給調整市場                      ：%d\n", ps_g_CEMSPINF->balancePri);		/* [20240220] Add */
-		printf("\033[0K");  printf("  容量市場                          ：%d\n", ps_g_CEMSPINF->capacityPri);		/* [20240220] Add */
+		printf("\033[0K");  printf("  容量市場(実需給)                  ：%d\n", ps_g_CEMSPINF->capacityPri);		/* [20240220] Add */
+		printf("\033[0K");  printf("  容量市場(実効性テスト)            ：%d\n", ps_g_CEMSPINF->capacityExamPri);		/* [20261112] Add */
 		printf("\033[0K");  printf("制御機能------------------------------------------------------------------\n");
 /* [20230217] Add Ed */
 		printf("\033[0K");  printf("  BT充放電制御                      ：%s\n", (ps_g_CEMSPINF->btControl == 1 ) ? "有効" : "無効");
@@ -4625,8 +4626,9 @@ void	func_display_rcvpowerinfo()
 			localTime.tm_min,
 			localTime.tm_sec );
 
+		printf("\033[0K");  printf("  受電電力一定制御               : %s\n", (ps_g_RCVPWINF->rcvPowConst == 1 ) ? "有効" : "無効");	/* [20261112] Add */
 		printf("\033[0K");  printf("  BCP用SOC (%)                   : %d\n", ps_g_RCVPWINF->BCPSoc );
-		printf("\033[0K");  printf("  受電電力脱落負荷量 (w)         : %d\n", ps_g_RCVPWINF->dropOffLoadPower );
+		printf("\033[0K");  printf("  想定負荷電力 (w)               : %d\n", ps_g_RCVPWINF->assumedLoadPow );	/* [20261112] Chg */
 		printf("\033[0K");  printf("  制御不感帯 (W)                 : %d\n", ps_g_RCVPWINF->deadZone );		/* [20230220] Chg */
 		printf("\033[0K");  printf("  放電再開SOC (%)                : %d\n", ( ps_g_RCVPWINF->BCPSoc + ps_g_RCVPWINF->dischgRestartSoC ) );
 		printf("\033[0K");  printf("  充電再開SOC (%)                : %d\n", ( ps_g_BATTEINF->socUpper - ps_g_RCVPWINF->chgRestartSoC ) );
@@ -4902,6 +4904,7 @@ void	func_display_fcrparaminfo()
 			printf("\033[0K");  printf("  充電時出力変化量 (w)   ：%9d\n", ps_g_FCRSTINF->chgPowerChgAmount);
 			printf("\033[0K");  printf("  不感帯応動種別         ：%s\n", (ps_g_FCRSTINF->deadBandResType == PV_FCRST_DEADBAND_TYPE_NONE ) ? "不感帯なし" : (ps_g_FCRSTINF->deadBandResType == PV_FCRST_DEADBAND_TYPE_ONE ) ? "不感帯ありパターン1※応動の開始≠0w" : "不感帯ありパターン2※応動の開始＝0w");
 			printf("\033[0K");  printf("  充電応動有無           ：%s\n", (ps_g_FCRSTINF->chgResponsiveEnabled == 1 ) ? "有効" : "無効");
+			printf("\033[0K");  printf("  周波数計測平均時間 (ms)：%d\n", ps_g_FCRSTINF->frequencyAveTime );	/* [20261112] Add */
 			printf("\033[0K");  printf("--------------------------------------------------------------------------------\n");
 			printf("\033[0K");  printf("■一次調整力レポート蓄積情報\n");
 			printf("\033[0K");  printf("  No レポート対象 LINK_ 単位,乗率___ 直値_________________ 計測名称_____________\n");
@@ -6172,7 +6175,7 @@ void	func_display_ManualMode()
 				/* CEMSモードがONGRIDで、受電電力一定制御がOFFの場合 */
 				if( (( ps_g_EMCTLFIL->cemsMode == PV_CTL_ONGRID )||
 					 ( ps_g_EMCTLFIL->cemsMode == PV_CTL_ERR_ONGRID ) ) &&
-					( ps_g_CEMSPINF->rcvPowConst == 0 ))
+					( ps_g_RCVPWINF->rcvPowConst == 0 ))					/* [20261112] Chg */
 				{
 					/* 指示値を０にする */
 					ps_g_EMCTLFIL->pvReqPow = 0;
@@ -6205,7 +6208,7 @@ void	func_display_ManualMode()
 			if( ( ps_g_PVSYSINF->btManualMode != btflgChange ) &&
 				( btflgChange == 1 ) &&
 				( (ps_g_CEMSPINF->btControl == 0 ) ||
-				  (ps_g_CEMSPINF->rcvPowConst == 0 )) )
+				  (ps_g_RCVPWINF->rcvPowConst == 0 )) )					/* [20261112] Chg */
 			{
 				/* 指示値を０にする */
 				ps_g_EMCTLFIL->bttReqPow = 0;
@@ -6302,7 +6305,7 @@ void	func_display_setupdatetime()
 		if( signal_flg ) break;
 
 		memset( keyData, 0, sizeof( keyData ) );
-		keyByte = read( 0, &keyData, 1024 );
+		keyByte = read( 0, &keyData, 32 );
 
 		if(keyByte < 0 )
 			/* 終了 */
