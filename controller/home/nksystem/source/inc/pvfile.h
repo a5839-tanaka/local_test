@@ -8,6 +8,8 @@
  * ・受電電力一定制御の有効/無効の追加、想定負荷電力の追加
  * [20261015] 2026.10.15
  * ・周波数計測平均時間の追加
+ * [20260814] 2026.08.14
+ * ・Amazon Linux 2023のビルドエラー対応
  * [20260515] 2026.05.15
  * ・一次調整力の実績データファイルをdatファイルで運用するように変更
  * [20251218] 2025.12.18 機能改善
@@ -595,6 +597,11 @@ struct st_PWPLNINF {								/* [18]需給計画値情報ファイル */
 		int		fcrUse[PV_POWPLN_DAY_PERIOD];		/* 一次使用有無 *//* [20250909] Add */
 		int		fcrDltKw[PV_POWPLN_DAY_PERIOD];		/* 一次調整力約定△kW *//* [20250807] Add */
 /* [20250807] Add Ed */
+/* [20261009] Add St */
+		int		outLimit[PV_POWPLN_DAY_PERIOD];		/* 出力制御値 *//* [20261009] Add */
+		int		resType[PV_POWPLN_DAY_PERIOD];		/* 応動商品区分 *//* [20261009] Add */
+		int		allDltKw[PV_POWPLN_DAY_PERIOD];		/* ΔkW約定量（全体） *//* [20261009] Add */
+/* [20261009] Add Ed */
 	}s_powDayPln[PV_POWPLN_MAX_DAY];
 };
 /* [20210128] Add Ed */
@@ -727,6 +734,8 @@ struct st_PLCFAINF {								/* [28]ＰＬＣ情報（１レコード分） */
 	int				svIfLink;						/* 装置状態リンク情報 */
 	int				svStLink;						/* 装置状態リンク情報 */
 };
+
+/* [20260814] Del */
 
 struct st_DEMNDFIL {										/* [31]デマンド制御情報保存ファイル */
 	struct timeval		startTime;							/* デマンド開始時刻 */
@@ -920,6 +929,9 @@ struct st_EMCTLFIL {								/* [49]エネルギーマネジメント管理ファ
 /* [20240701] Add St */
 	struct st_ORDERPARA 	s_fcr_para[AWS_ORDER_STOCK];		/* 一次調整力 */
 	struct st_ORDERPARA 	s_frr_para[AWS_ORDER_STOCK];		/* 二次調整力①② */
+/* [20261009] Add St */
+	struct st_ORDERPARA 	s_com_para[AWS_ORDER_STOCK];		/* 複合市場 */
+/* [20261009] Add Ed */
 	struct st_ORDERPARA 	s_cm_para[AWS_ORDER_STOCK];			/* 容量市場 */
 	struct st_ORDERPARA 	s_cm_exam_para[AWS_ORDER_STOCK];	/* 容量市場(実効性テスト) */
 /* [20240701] Add Ed */
@@ -933,6 +945,9 @@ struct st_EMCTLFIL {								/* [49]エネルギーマネジメント管理ファ
 /* [20240701] Add St */
 	struct st_evtdata		s_evtdata_fcr;				/* 制御データ(一次調整力) */
 	struct st_evtdata		s_evtdata_frr;				/* 制御データ(二次調整力①②) */
+/* [20261009] Add St */
+	struct st_evtdata		s_evtdata_com;				/* 制御データ(複合市場) */
+/* [20261009] Add Ed */
 	struct st_evtdata		s_evtdata_cm;				/* 制御データ(容量市場：実需給) */
 	struct st_evtdata		s_evtdata_cm_exam;			/* 制御データ(容量市場：実効性テスト) */
 /* [20240701] Add Ed */
@@ -959,6 +974,9 @@ struct st_EMCTLFIL {								/* [49]エネルギーマネジメント管理ファ
 /* [20240701] Add St */
 	struct st_setdata		s_setdata_fcr;				/* 制御データ(一次調整力) */
 	struct st_setdata		s_setdata_frr;				/* 制御データ(二次調整力①②) */
+/* [20261009] Add St */
+	struct st_setdata		s_setdata_com;				/* 制御データ(複合市場) */
+/* [20261009] Add Ed */
 	struct st_setdata		s_setdata_cm;				/* 制御データ(容量市場：実需給) */
 	struct st_setdata		s_setdata_cm_exam;			/* 制御データ(容量市場：実効性テスト) */
 /* [20240701] Add Ed */
